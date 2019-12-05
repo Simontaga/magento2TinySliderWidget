@@ -1,0 +1,58 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+use Magento\Framework\App\Action\Action;
+
+/** @var \Magento\CatalogWidget\Block\Product\ProductsList $block */
+?>
+<?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$productCollection = $objectManager->create('Magento\Catalog\Model\ResourceModel\Product\CollectionFactory');
+$collection = $productCollection->create()
+    ->addAttributeToSelect('*')
+    ->load();
+
+    $storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+    $store = $storeManager->getStore();
+    $currencyCode = $store->getCurrentCurrencyCode();
+?>
+
+<?php $url = $store->getBaseUrl() . "pub/media/catalog/product/"; ?>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.2/tiny-slider.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.2/min/tiny-slider.js"></script>
+
+
+<div class="slider">
+<?php foreach ($collection as $product) :
+?>
+<div class="slide_">
+  <a href="<?= $product->getProductUrl();?>">
+<img src="<?= $url . $product->getData('image') ?>" />
+</a>
+<p><?= $product->getPriceInfo()->getPrice('regular_price')->getValue() . $currencyCode?></p>
+</div>
+<?php endforeach?>
+</div>
+
+<script>
+  var slider = tns({
+    container: '.slider',
+    items: 10,
+    autoplay:true,
+    controls:false,
+    autoplayTimeout:1800,
+    controls:false,
+    nav:false,
+    gutter:0,
+    autoplayButtonOutput:false,
+    autoplayHoverPause:true,
+    edgePadding:0,
+  });
+  </script>
+
+<script>
+slider.play();
+</script>
+<!-- strtolower($product->getName()) -->
